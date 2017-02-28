@@ -32,6 +32,8 @@ import cogs.util
 
 import perms
 
+from flask import request
+
 
 ### Constants ###
 
@@ -937,6 +939,22 @@ def process_runs():
 def process_run(obj_uuid):
     return process_object(srv.get_run, obj_uuid)
 
+### API version 2 ###
+
+## User Endpoints ##
+
+@app.route("/v2/users/", methods=['GET'])
+@httpauth.login_required
+@auth.requires_auth_route()
+def v2_list_users():
+    # print request.args
+    users = []
+    for uid in auth.list_users():
+        entry = auth.get_user(uid).get_dict()
+        entry['uid'] = uid
+        users.append(entry)
+    out = {'users': users}
+    return flask.jsonify(out)
 
 ### Exceptions ###
 
